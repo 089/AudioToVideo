@@ -11,6 +11,7 @@ else
 	WAVES=$2
 	IMAGE=yt-template.png
 	FFMPEG="../libs/ffmpeg/ffmpeg" # local ffmpeg binary
+	MAIL_ADDRESS=""
     # generate text image for video
     convert -gravity southeast -splice 20x20 -gravity northwest -splice 20x20 -font Helvetica -gravity Center -weight 700 -fill "#cc0000" -pointsize 40 pango:"<b>$TITLE</b>" image-text.png
     
@@ -29,9 +30,12 @@ else
 	else
 		# generate static video
 		time $FFMPEG -loop 1 -i cover-1920x1080.png -i "$MP3" -c:a copy -c:v libx264 -shortest video.mkv
-		     
 	fi
 
+	if [ -z "$1" ]; then
+		# send an email notification
+		curl -d @- https://curlmail.co/$MAIL_ADDRESS
+	fi
 echo 1920x1080.png genrated
 echo cover-1920x1080.png generated
 echo cover-1080x1080.png generated
