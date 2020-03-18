@@ -36,7 +36,10 @@ else
 	source ../config.sh
 	if [ -z "$MAIL_ADDRESS" ]; then
 		# send an email notification
-		curl "https://curlmail.co/${MAIL_ADDRESS}?subject=[AudioToVideo] conversion has been finished&content=${MP3} with title ${TITLE} has been processed."
+		SUBJECT="subject=[AudioToVideo]"
+		CONTENT="content=CONVERSION_FINISHED"
+		URL="https://curlmail.co/${MAIL_ADDRESS}?${SUBJECT}&${CONTENT}"
+		curl -g $URL
 	fi
 
 echo 1920x1080.png genrated
