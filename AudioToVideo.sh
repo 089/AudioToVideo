@@ -1,14 +1,16 @@
+# modified for remote usage: local ffmpeg binary and mp3 with a fix directory and name
 # creates a youtube video with a still image and optional waves.
-if [ -z "$1" ] && [ -z "$2" ]; then
+if [ -z "$1" ]; then
     echo Syntax:
-    echo "AudioToVideo.sh /path/to/audio.mp3 \"Track Title\""
+    echo "AudioToVideo.sh \"Track Title\""
     echo "OR"
-    echo "AudioToVideo.sh /path/to/audio.mp3 \"Track Title\" waves" 
+    echo "AudioToVideo.sh \"Track Title\" waves" 
 else
-	MP3=$1
-	TITLE=$2
-	WAVES=$3
+	MP3="../tmp/audio.mp3" # fix name and directory
+	TITLE=$1
+	WAVES=$2
 	IMAGE=yt-template.png
+	FFMPEG="../libs/ffmpeg/ffmpeg" # local ffmpeg binary
     # generate text image for video
     convert -gravity southeast -splice 20x20 -gravity northwest -splice 20x20 -font Helvetica -gravity Center -weight 700 -fill "#cc0000" -pointsize 40 pango:"<b>$TITLE</b>" image-text.png
     
@@ -23,10 +25,10 @@ else
 
     if [ "$WAVES" == "waves" ]; then
 		# generate video with waves
-		time ffmpeg -i "$MP3" -loop 1 -i cover-1920x1080.png -filter_complex "[0:a]showwaves=s=1920x200:mode=cline:colors=0xff0000|0xCC0000:scale=sqrt[fg];[1:v]scale=1920:-1[bg];[bg][fg]overlay=shortest=1:900:format=auto,format=yuv420p[out]" -map "[out]" -map 0:a -pix_fmt yuv420p -c:v libx264 -preset medium -crf 18 -c:a copy -shortest video-waves.mkv
+		time $FFMPEG -i "$MP3" -loop 1 -i cover-1920x1080.png -filter_complex "[0:a]showwaves=s=1920x200:mode=cline:colors=0xff0000|0xCC0000:scale=sqrt[fg];[1:v]scale=1920:-1[bg];[bg][fg]overlay=shortest=1:900:format=auto,format=yuv420p[out]" -map "[out]" -map 0:a -pix_fmt yuv420p -c:v libx264 -preset medium -crf 18 -c:a copy -shortest video-waves.mkv
 	else
 		# generate static video
-		time ffmpeg -loop 1 -i cover-1920x1080.png -i "$MP3" -c:a copy -c:v libx264 -shortest video.mkv
+		time $FFMPEG -loop 1 -i cover-1920x1080.png -i "$MP3" -c:a copy -c:v libx264 -shortest video.mkv
 		     
 	fi
 
